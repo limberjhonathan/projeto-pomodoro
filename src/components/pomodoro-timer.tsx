@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useInterval } from "../hooks/use-intervals";
 // import { secondsToTime } from "../utils/seconds-to-time";
 import { Button } from "./button";
@@ -18,15 +18,32 @@ interface Props {
 }
 
 export function PomodoroTimer(props: Props): JSX.Element {
-    const [mainTime, setMainTime] = React.useState(props.pomodoroTime)
-    const [timeCounting, setTimeCounting] = React.useState(false)
-    const [working, setWorking] = React.useState(false)
-    const [resting, setResting] = React.useState(false)
+    const [mainTime, setMainTime] = useState(props.pomodoroTime)
+    const [timeCounting, setTimeCounting] = useState(false)
+    const [working, setWorking] = useState(false)
+    const [resting, setResting] = useState(false)
+    const [cyclesQtManager, setCyclesQtManager] = useState(
+        new Array(props.cycles - 1).fill(true),
+    )
+
+    const[completeCycle, setCompletedCycles] = useState(0)
+    const[completeCycle, setCompletedCycles] = useState(0)
+    const[completeCycle, setCompletedCycles] = useState(0)
 
     useEffect(() => {
         if (working) document.body.classList.add('working')
         if (resting) document.body.classList.remove('working')
-    }, [working])
+        
+        if (mainTime > 0) return
+
+        if (working && cyclesQtManager.length > 0){
+            configureRest(false)
+            cyclesQtManager.pop()
+        } else if (working && cyclesQtManager.length <= 0){
+            configureRest(false)
+            setCyclesQtManager(new Array(props.cycles - 1).fill(true))
+        }
+    }, [working, resting])
 
     useInterval(() => {
         setMainTime(mainTime - 1);
